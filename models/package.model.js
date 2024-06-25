@@ -5,8 +5,10 @@ const packageSchema = new mongoose.Schema({
         type:String,
         required:[true,"Please add Package Name"]
     },
-    testCategoryName:{
-        type:[String],
+    testCategoryId:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:"testCategoryDetail",
+        required:[true,"Please add Test Category"]
     },
     testQuantity:{
         type:Number,

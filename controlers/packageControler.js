@@ -1,101 +1,112 @@
-const packageModel = require("../models/package.model");
+// Import necessary modules
+const mongoose = require('mongoose');
+const packageModel = require('../models/package.model');
 
-
-// create Package
-exports.createPackage = async (req,res) =>{
+// Function to create a new package
+exports.createPackage = async (req, res) => {
     try {
-        console.log(req.body);
-        const { packageName,testQuantity,testGroupQuantity,currentPrice,actualPrice,testCategoryName,offPercentage} = req.body;
+        console.log(req.body)
+        const { packageName, testQuantity, testGroupQuantity, currentPrice, actualPrice, testCategoryId, offPercentage } = req.body;
 
-        if(!packageName){
-            return res.status(403).json({
+        // Check required fields
+        if (!packageName || !testCategoryId || !actualPrice) {
+            return res.status(400).json({
                 success: false,
-                message: "Please Provide All Fields !!"
-            })
-        }
-
-        const existingPackage = await packageModel.findOne({packageName : packageName});
-        if (existingPackage) {
-            return res.status(403).json({
-                success: false,
-                message: "Package Already Exists !!"
+                message: "Please provide all required fields: Package Name, Test Categories, Actual Price."
             });
         }
+
+        // Check if package already exists
+        const existingPackage = await packageModel.findOne({ packageName });
+        if (existingPackage) {
+            return res.status(400).json({
+                success: false,
+                message: "Package already exists."
+            });
+        }
+
+        // Create new package instance
         const newPackage = new packageModel({
             packageName,
             testQuantity,
             testGroupQuantity,
             currentPrice,
             actualPrice,
-            testCategoryName,
+            testCategoryId,
             offPercentage
-        })
+        });
+
+        // Save the new package to the database
         await newPackage.save();
-        res.status(200).json({
+
+        res.status(201).json({
             success: true,
             data: newPackage,
-            message: "Package Created Successfully !!"
-        })
-
+            message: "Package created successfully."
+        });
     } catch (error) {
-        console.log("Error : ", error);
-        return res.status(500).json({
+        console.error("Error:", error);
+        res.status(500).json({
             success: false,
             message: "Internal Server Error"
         });
     }
-}
+};
 
-// Get All Package
-exports.getAllPackage = async (req,res) =>{
+// Function to get all packages
+exports.getAllPackage = async (req, res) => {
     try {
-        const getAllPackage = await packageModel.find();
+        const getAllPackage = await packageModel.find().populate('testCategoryId');
+
         if (getAllPackage.length === 0) {
-            return res.status(403).json({
+            return res.status(404).json({
                 success: false,
-                message: "Package Not Found"
-            })
+                message: "No packages found."
+            });
         }
+
         res.status(200).json({
             success: true,
             data: getAllPackage,
-            message: "All Package Found"
-        })
-
+            message: "All packages found."
+        });
     } catch (error) {
-        console.log("Error : ", error);
-        return res.status(500).json({
+        console.error("Error:", error);
+        res.status(500).json({
             success: false,
             message: "Internal Server Error"
         });
     }
-}
+};
 
-// Delete Package
+// Function to delete a package by ID
 exports.deletePackage = async (req, res) => {
     try {
-        const id = req.params.id;
-        const checkPackage = await packageModel.deleteOne({ _id: id })
-        if (!checkPackage) {
-            return res.status(403).json({
+        const packageId = req.params.id;
+
+        const deletedPackage = await packageModel.findByIdAndDelete(packageId);
+
+        if (!deletedPackage) {
+            return res.status(404).json({
                 success: false,
-                message: "Package Not Found"
-            })
+                message: "Package not found."
+            });
         }
+
         res.status(200).json({
             success: true,
-            message: "Package Deleted Succesfully !!"
-        })
+            message: "Package deleted successfully."
+        });
     } catch (error) {
-        console.log("Error : ", error);
-        return res.status(500).json({
+        console.error("Error:", error);
+        res.status(500).json({
             success: false,
             message: "Internal Server Error"
         });
     }
-}
+};
 
-// Update Package
+// Function to update a package by ID
 exports.updatePackage = async (req, res) => {
     try {
         const packageId = req.params.id;
@@ -111,6 +122,7 @@ exports.updatePackage = async (req, res) => {
 
         const options = { new: true }; // Return the modified document
         const updatedPackage = await packageModel.findByIdAndUpdate(packageId, updates, options);
+
         if (!updatedPackage) {
             return res.status(404).json({
                 success: false,
@@ -124,10 +136,10 @@ exports.updatePackage = async (req, res) => {
             data: updatedPackage
         });
     } catch (error) {
-        console.log("Error : ", error);
-        return res.status(500).json({
+        console.error("Error:", error);
+        res.status(500).json({
             success: false,
             message: "Internal Server Error"
         });
     }
-}
+};

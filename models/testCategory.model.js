@@ -5,8 +5,9 @@ const testCategorySchema = new mongoose.Schema({
         type:String,
         required:[true,"Please fill the Test Category Name"]
     },
-    testName:{
-        type:[String],
+    testId:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:"TestDetail",
         required:[true,"Please add tests"]
     },
     testNumber:{
