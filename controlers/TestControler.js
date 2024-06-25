@@ -21,6 +21,7 @@ exports.createTest = async (req,res) =>{
                 message: "Test Name Already Exists !!"
             });
         }
+
         const newTest = new testModel({
             testName,
             actualPrice,
@@ -53,6 +54,7 @@ exports.getAllTest = async (req,res) =>{
                 message: "Test Not Found"
             })
         }
+        
         res.status(200).json({
             success: true,
             data: getAllTest,
