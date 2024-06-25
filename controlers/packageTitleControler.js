@@ -1,12 +1,12 @@
 const packageTitleModel = require("../models/packageTitle.model");
-
+const testModel = require("../models/test.model");
 // create Package Title
 exports.createPackageTitle = async (req,res) =>{
     try {
         console.log(req.body);
         const { packageTitle , packages , packagesQuantity} = req.body;
-
-        if(!packageTitle || !packages){
+        console.log(req.body)
+        if(!packageTitle ){
             return res.status(403).json({
                 success: false,
                 message: "Please Provide All Fields !!"
@@ -20,9 +20,10 @@ exports.createPackageTitle = async (req,res) =>{
                 message: "Package Title Already Exists !!"
             });
         }
+        
         const newTest = new packageTitleModel({
             packageTitle,
-            packages,
+            packagesId:packages,
             packagesQuantity
         })
         await newTest.save();
@@ -42,20 +43,36 @@ exports.createPackageTitle = async (req,res) =>{
 }
 
 // Get All Package Title
-exports.getAllPackageTitle = async (req,res) =>{
+exports.getAllPackageTitle = async (req, res) => {
     try {
-        const getAllTest = await packageTitleModel.find();
+        const getAllTest = await packageTitleModel.find().populate('packagesId');
         if (getAllTest.length === 0) {
             return res.status(403).json({
                 success: false,
                 message: "Package Title Not Found"
-            })
+            });
         }
+
+        const transformedTitles = await Promise.all(getAllTest.map(async (title) => {
+            const packageDetails = await Promise.all(title.packagesId.map(async (packageId) => {
+                const testDetails = await testModel.find({ _id: packageId });
+                return {
+                    packageId,
+                    testDetails
+                };
+            }));
+
+            return {
+                ...title.toObject(),
+                packageDetails
+            };
+        }));
+
         res.status(200).json({
             success: true,
-            data: getAllTest,
+            data: transformedTitles,
             message: "All Package Title Found"
-        })
+        });
 
     } catch (error) {
         console.log("Error : ", error);
@@ -64,7 +81,7 @@ exports.getAllPackageTitle = async (req,res) =>{
             message: "Internal Server Error"
         });
     }
-}
+};
 
 // Delete Package Title
 exports.deletePackageTitle = async (req, res) => {
@@ -95,6 +112,13 @@ exports.updatePackageTitle = async (req, res) => {
     try {
         const packageTitleId = req.params.id;
         const updates = req.body;
+        console.log("Incoming Data", updates);
+
+        // Modify packagesId array to convert label strings to ObjectId types
+        if (updates.packages) {
+            updates.packagesId = updates.packages.map(package => package.label);
+            delete updates.packages; // Remove the 'packages' property from updates
+        }
 
         // Check if there are no fields to update
         if (Object.keys(updates).length === 0) {
@@ -113,6 +137,7 @@ exports.updatePackageTitle = async (req, res) => {
             });
         }
 
+        console.log("Update Data", updatedPackageTitle);
         res.status(200).json({
             success: true,
             message: "Package Title updated successfully.",

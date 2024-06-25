@@ -1,15 +1,17 @@
 // Import necessary modules
 const mongoose = require('mongoose');
 const packageModel = require('../models/package.model');
+const testCategoryModel = require("../models/testCategory.model");
 
+const { ObjectId } = require('mongoose').Types;
 // Function to create a new package
 exports.createPackage = async (req, res) => {
     try {
         console.log(req.body)
-        const { packageName, testQuantity, testGroupQuantity, currentPrice, actualPrice, testCategoryId, offPercentage } = req.body;
+        const { packageName, testQuantity, testGroupQuantity, currentPrice, actualPrice, testCategoryIds, offPercentage } = req.body;
 
         // Check required fields
-        if (!packageName || !testCategoryId || !actualPrice) {
+        if (!packageName || !testCategoryIds || !actualPrice) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all required fields: Package Name, Test Categories, Actual Price."
@@ -32,7 +34,7 @@ exports.createPackage = async (req, res) => {
             testGroupQuantity,
             currentPrice,
             actualPrice,
-            testCategoryId,
+            testCategoryId: testCategoryIds,
             offPercentage
         });
 
@@ -65,9 +67,31 @@ exports.getAllPackage = async (req, res) => {
             });
         }
 
+        const transformedPackages = await Promise.all(getAllPackage.map(async (pkg) => {
+            try {
+                const testCategoryIds = pkg.testCategoryId.map(category => category._id.toString()); // Convert test category IDs to strings
+
+                const matchedTestCategories = await testCategoryModel.find({ _id: { $in: testCategoryIds } }).populate('testId');
+                console.log("Test Category IDs:", testCategoryIds);
+                console.log("Matched Test Categories:", matchedTestCategories);
+
+                // Flatten the test details from matched test categories
+                const matchedTestDetails = matchedTestCategories.flatMap(category => category.testId);
+
+                return {
+                    ...pkg.toObject(),
+                    testCategoryId: pkg.testCategoryId.map(category => category._id),
+                    testDetails: matchedTestDetails // Assign matched test details
+                };
+            } catch (error) {
+                console.error("Error:", error);
+                throw new Error("Error fetching test details");
+            }
+        }));
+
         res.status(200).json({
             success: true,
-            data: getAllPackage,
+            data: transformedPackages,
             message: "All packages found."
         });
     } catch (error) {
@@ -78,7 +102,6 @@ exports.getAllPackage = async (req, res) => {
         });
     }
 };
-
 // Function to delete a package by ID
 exports.deletePackage = async (req, res) => {
     try {
