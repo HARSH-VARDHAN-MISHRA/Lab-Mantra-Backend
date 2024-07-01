@@ -3,9 +3,24 @@
 const mongoose = require('mongoose');
 
 const LaboratorySchema = new mongoose.Schema({
-    name: {
+    RepresentedName:{
+        type: String,
+        // required: true,
+    },
+    LabName: {
         type: String,
         required: true,
+    },
+    email:{
+        type: String,
+        required: true,
+    },
+    PhoneNumber:{
+        type: Number,
+        // required: true,
+    },
+    RepresentedPhoneNumber:{
+        type: Number,
     },
     address: {
         type: String,
@@ -23,24 +38,17 @@ const LaboratorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    tests: {
-        type: [String],
+    Longitude:{
+        type: String,
         required: true,
     },
-    location: {
-        type: {
-            type: String,
-            default: 'Point',
-            enum: ['Point'],
-            required: true,
-        },
-        coordinates: {
-            type: [Number], // [longitude, latitude]
-            required: true,
-        },
-    },
+    Latitude:{
+        type: String,
+        required: true,
+    }
+   
+    
 });
 
-LaboratorySchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('LaboratoryDetail', LaboratorySchema);

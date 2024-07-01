@@ -2,33 +2,115 @@
 
 const Laboratory = require('../models/laboratory.model');
 const haversine = require('haversine-distance');
+const sendEmail = require('../utils/SendEmail');
 
 // Create new laboratory
+const validateCreateLaboratory = (body) => {
+    const { name, address, email, city, phoneNumber, state, secondPhoneNumber, pinCode, representedName } = body;
+
+    const errors = [];
+
+    // Validate required fields
+    if (!name) {
+        errors.push("Name is required.");
+    }
+    if (!address) {
+        errors.push("Address is required.");
+    }
+    if (!city) {
+        errors.push("City is required.");
+    }
+    if (!state) {
+        errors.push("State is required.");
+    }
+    if (!pinCode) {
+        errors.push("Pin Code is required.");
+    }
+
+    return errors;
+};
+
 exports.createLaboratory = async (req, res) => {
     try {
-        const { name, address, city, state, pinCode, tests, location } = req.body;
-
-        // Validate required fields
-        if (!name || !address || !city || !state || !pinCode || !tests || !location || !location.coordinates || location.coordinates.length !== 2) {
-            return res.status(400).send({ error: "All fields are required: name, address, city, state, pinCode, tests, and location (with coordinates)." });
+        const { name, address, email, city, PhoneNumber, state, SecondPhoneNumber, pinCode, RepresentedName,latitude,longitude } = req.body;
+        // Validate request body
+        console.log(req.body)
+        const validationErrors = validateCreateLaboratory(req.body);
+        if (validationErrors.length > 0) {
+            return res.status(400).send({ errors: validationErrors });
         }
 
-        // Check for duplicate lab name
-        const existingLab = await Laboratory.findOne({ name });
+        // Check for duplicate lab name or email
+        const existingLab = await Laboratory.findOne({ $or: [{ name }, { email }] });
         if (existingLab) {
             return res.status(400).json({
                 success: false,
-                message: "Laboratory with this name already exists."
+                message: "Laboratory with this name or email already exists."
             });
         }
 
-        // Ensure location type is 'Point'
-        location.type = 'Point';
+        // Create new laboratory instance
+        const newLaboratory = new Laboratory({
+            LabName:name,
+            address,
+            email,
+            city,
+            PhoneNumber,
+            state,
+            RepresentedPhoneNumber:SecondPhoneNumber,
+            pinCode,
+            RepresentedName,
+            Longitude:longitude,
+            Latitude:latitude
+        });
 
-        const laboratory = new Laboratory({ name, address, city, state, pinCode, tests, location });
-        await laboratory.save();
+        // Save the new laboratory to the database
+        await newLaboratory.save(); 
+        console.log("New Lab", newLaboratory)
+        // Prepare email options    
+        const options = {
+            email: email,
+            subject: 'Please Give Your Location Access And Make Your Lab Live On Lab Mantra',
+            message: `
+                <div style="font-family: Arial, sans-serif; color: #333; background-color: #E9C46A; padding: 20px; border-radius: 10px; width: 600px; margin: 0 auto;">
+                    <h2 style="color: #E76F51; text-align: center;">Hello,</h2>
+                    <p style="font-size: 16px; line-height: 1.5; color: #333;">
+                        We are excited to invite you to make your lab live on <strong style="color: #36BA98;">Lab Mantra</strong>! 
+                        To provide a seamless experience and connect with a wider audience, we request your location access.
+                    </p>
+                    <p style="font-size: 16px; line-height: 1.5; color: #333;">
+                        Your participation will help us in providing precise and relevant information to our users, 
+                        thereby enhancing their experience and trust in your services.
+                    </p>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="http://localhost:3001/give-location?LabId=${newLaboratory._id}" style="
+                            display: inline-block;
+                            padding: 15px 30px;
+                            font-size: 16px;
+                            color: #fff;
+                            background-color: #36BA98;
+                            border: none;
+                            border-radius: 5px;
+                            text-decoration: none;
+                        ">Give Location Access</a>
+                    </div>
+                    <p style="font-size: 16px; line-height: 1.5; margin-top: 20px; color: #333;">
+                        Thank you for your cooperation. Together, we can make Lab Mantra a more valuable resource for everyone.
+                    </p>
+                    <p style="font-size: 16px; line-height: 1.5; color: #333;">
+                        Best Regards,<br>
+                        <strong style="color: #F4A261;">The Lab Mantra Team</strong>
+                    </p>
+                </div>
+            `
+        };
+        
 
-        res.status(201).send(laboratory);
+        // Send the email (assuming sendEmail is a defined function)
+        await sendEmail(options);
+
+        // Respond with the newly created laboratory
+        res.status(201).send(newLaboratory);
     } catch (error) {
         console.error("Error creating laboratory: ", error);
         res.status(500).send({ error: "Internal Server Error" });
