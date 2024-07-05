@@ -4,8 +4,21 @@ const { createPackageTitle, getAllPackageTitle, deletePackageTitle, updatePackag
 const { createTestCategory, getAllTestCategory, deleteTestCategory, updateTestCategory } = require('../controlers/TestCategoryControler');
 const { createPackage, getAllPackage, deletePackage, updatePackage } = require('../controlers/packageControler');
 const { createLaboratory, getLaboratories, findNearestLaboratories } = require('../controlers/laboratoryControler');
+const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForSignIn, VerifyOtp, LoginUser, getAllUsers } = require('../controlers/UserControler');
 
 const route = express.Router();
+
+// -- Authentication ---- 
+route.post("/register", register) // create Account
+
+route.post('/Password-change-request', PasswordChangeRequest);
+route.post('/Resend-Otp', ResendOtp);
+route.post('/Verify-sign-Otp', verifyOtpForSignIn);
+route.post('/resend-sign-Otp', ResendSignOtp);
+route.post('/Verify-Otp/:email/:newPassword', VerifyOtp)
+
+route.post("/login", LoginUser);
+route.get("/all-users", getAllUsers);
 
 // Test
 route.post("/create-test",createTest );
