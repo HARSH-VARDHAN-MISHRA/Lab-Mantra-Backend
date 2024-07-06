@@ -40,7 +40,7 @@ const UserSchema = mongoose.Schema({
         type: String
     },
     OtpGeneratedAt: {
-        type: Date,
+        type: Date, // comment
     }
 }, { timestamps: true });
 
