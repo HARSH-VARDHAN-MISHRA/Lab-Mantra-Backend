@@ -3,7 +3,7 @@ const { createTest, getAllTest, deleteTest, updateTest } = require('../controler
 const { createPackageTitle, getAllPackageTitle, deletePackageTitle, updatePackageTitle } = require('../controlers/packageTitleControler');
 const { createTestCategory, getAllTestCategory, deleteTestCategory, updateTestCategory } = require('../controlers/TestCategoryControler');
 const { createPackage, getAllPackage, deletePackage, updatePackage } = require('../controlers/packageControler');
-const { createLaboratory, getLaboratories, findNearestLaboratories } = require('../controlers/laboratoryControler');
+const { createLaboratory, getLaboratories, findNearestLaboratories, updateLabLocations } = require('../controlers/laboratoryControler');
 const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForSignIn, VerifyOtp, LoginUser, getAllUsers } = require('../controlers/UserControler');
 
 const route = express.Router();
@@ -47,5 +47,8 @@ route.put("/update-package/:id",updatePackage );
 route.post('/create-laboratory', createLaboratory);
 route.get('/get-all-laboratories', getLaboratories);
 route.get('/nearest-laboratories', findNearestLaboratories);
+route.post('/lab-address-update', updateLabLocations);
+
+
 
 module.exports = route
