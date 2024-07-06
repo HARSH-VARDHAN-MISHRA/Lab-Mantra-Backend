@@ -40,11 +40,11 @@ const LaboratorySchema = new mongoose.Schema({
     },
     Longitude:{
         type: String,
-        required: true,
+       
     },
     Latitude:{
         type: String,
-        required: true,
+       
     }
    
     
