@@ -5,6 +5,7 @@ const { createTestCategory, getAllTestCategory, deleteTestCategory, updateTestCa
 const { createPackage, getAllPackage, deletePackage, updatePackage } = require('../controlers/packageControler');
 const { createLaboratory, getLaboratories, findNearestLaboratories, updateLabLocations } = require('../controlers/laboratoryControler');
 const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForSignIn, VerifyOtp, LoginUser, getAllUsers } = require('../controlers/UserControler');
+const { getAllVouchers, applyVoucher, createVoucher, activateVoucher, deactivateVoucher, deleteVoucher } = require('../controlers/VoucherController');
 
 const route = express.Router();
 
@@ -48,6 +49,14 @@ route.post('/create-laboratory', createLaboratory);
 route.get('/get-all-laboratories', getLaboratories);
 route.get('/nearest-laboratories', findNearestLaboratories);
 route.post('/lab-address-update', updateLabLocations);
+
+//====================VOUCHERS====================================//
+route.get('/vouchers', getAllVouchers)
+route.post('/apply-vouchers', applyVoucher)
+route.post('/vouchers/create-vouchers', createVoucher)
+route.put('/vouchers/activateVoucher/:id', activateVoucher)
+route.put('/vouchers/deactivateVoucher/:id', deactivateVoucher)
+route.delete('/vouchers/deleteVoucher/:id', deleteVoucher)
 
 
 
