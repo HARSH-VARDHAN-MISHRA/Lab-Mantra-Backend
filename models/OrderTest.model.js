@@ -100,6 +100,10 @@ const OrderSchema = new mongoose.Schema({
     transactionId: {
         type: String,
         default: "Cash Collections"  
+    },
+    PatientId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"UserSchemaDetails"
     }
 }, { timestamps: true });
 

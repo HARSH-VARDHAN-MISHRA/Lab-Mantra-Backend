@@ -7,6 +7,7 @@ const { createLaboratory, getLaboratories, findNearestLaboratories, updateLabLoc
 const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForSignIn, VerifyOtp, LoginUser, getAllUsers } = require('../controlers/UserControler');
 const { getAllVouchers, applyVoucher, createVoucher, activateVoucher, deactivateVoucher, deleteVoucher } = require('../controlers/VoucherController');
 const { checkout, paymentVerification } = require('../controlers/PaymentController');
+const { isAuthenticatedUser } = require('../middlewares/auth');
 
 const route = express.Router();
 
@@ -62,7 +63,7 @@ route.put('/vouchers/deactivateVoucher/:id', deactivateVoucher)
 route.delete('/vouchers/deleteVoucher/:id', deleteVoucher)
 
 // ===================Payment ==========================//
-route.post('/Create-payment',checkout)
+route.post('/Create-payment',isAuthenticatedUser,checkout)
 route.post('/paymentverification',paymentVerification)
 
 module.exports = route

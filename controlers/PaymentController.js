@@ -8,6 +8,8 @@ const instance = new Razorpay({
 
 exports.checkout = async (req, res) => {
     try {
+        const userId = req.user._id
+        console.log(userId);
         const orderData = req.body; // Assuming req.body contains the OrderData
         const testData = orderData.OrderDetails.TestInfos
         const cartData = orderData.OrderDetails.CartData
@@ -52,13 +54,14 @@ exports.checkout = async (req, res) => {
                     testName: test.testName,
                 })) : [],
             })),
+            PatientId:userId,
             paymentStatus: "Pending", // Default status
             transactionId: "Cash Collections" // Default transactionId
         });
-// order_OW3jB8WTVnsK9F
+        // order_OW3jB8WTVnsK9F
         // Save the new order to the database
         const savedOrder = await newOrder.save();
-        console.log("Save-Order", savedOrder);
+        // console.log("Save-Order", savedOrder);
 
         res.status(200).json({
             success: true,
@@ -100,10 +103,9 @@ exports.paymentVerification = async (req, res) => {
                 `http://localhost:3000/booking-confirmed?reference=${razorpay_payment_id}`
             );
         } else {
-            res.status(400).json({
-                success: false,
-                message: 'Payment verification failed',
-            });
+            res.redirect(
+                `http://localhost:3000/booking-failed?orderId=${razorpay_order_id}`
+            );
         }
     } catch (error) {
         console.error('Error in payment verification:', error);
