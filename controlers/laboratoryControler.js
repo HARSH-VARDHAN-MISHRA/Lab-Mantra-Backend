@@ -296,3 +296,32 @@ exports.findNearestLaboratories = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
+
+exports.getLabInformationByCityAndPinCode = async (req, res) => {
+    try {
+        const { pinCode, city } = req.query;
+        let query = {};
+
+        if (pinCode && city) {
+            query = {
+                $and: [
+                    { pinCode: pinCode },
+                    { city: { $regex: new RegExp(city, 'i') } }
+                ]
+            };
+        } else if (pinCode) {
+            query = { pinCode: pinCode };
+        } else if (city) {
+            query = { city: { $regex: new RegExp(city, 'i') } };
+        } else {
+            return res.status(400).json({ error: 'Either pinCode or city must be provided' });
+        }
+
+        const laboratories = await Laboratory.find(query);
+
+        res.status(200).json(laboratories);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};

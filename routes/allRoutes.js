@@ -3,9 +3,10 @@ const { createTest, getAllTest, deleteTest, updateTest } = require('../controler
 const { createPackageTitle, getAllPackageTitle, deletePackageTitle, updatePackageTitle } = require('../controlers/packageTitleControler');
 const { createTestCategory, getAllTestCategory, deleteTestCategory, updateTestCategory } = require('../controlers/TestCategoryControler');
 const { createPackage, getAllPackage, deletePackage, updatePackage } = require('../controlers/packageControler');
-const { createLaboratory, getLaboratories, findNearestLaboratories, updateLabLocations } = require('../controlers/laboratoryControler');
+const { createLaboratory, getLaboratories, findNearestLaboratories, updateLabLocations, getLabInformationByCityAndPinCode } = require('../controlers/laboratoryControler');
 const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForSignIn, VerifyOtp, LoginUser, getAllUsers } = require('../controlers/UserControler');
 const { getAllVouchers, applyVoucher, createVoucher, activateVoucher, deactivateVoucher, deleteVoucher } = require('../controlers/VoucherController');
+const { checkout, paymentVerification } = require('../controlers/PaymentController');
 
 const route = express.Router();
 
@@ -49,6 +50,8 @@ route.post('/create-laboratory', createLaboratory);
 route.get('/get-all-laboratories', getLaboratories);
 route.get('/nearest-laboratories', findNearestLaboratories);
 route.post('/lab-address-update', updateLabLocations);
+route.get('/lab-info-by-pincode', getLabInformationByCityAndPinCode);
+
 
 //====================VOUCHERS====================================//
 route.get('/vouchers', getAllVouchers)
@@ -58,6 +61,8 @@ route.put('/vouchers/activateVoucher/:id', activateVoucher)
 route.put('/vouchers/deactivateVoucher/:id', deactivateVoucher)
 route.delete('/vouchers/deleteVoucher/:id', deleteVoucher)
 
-
+// ===================Payment ==========================//
+route.post('/Create-payment',checkout)
+route.post('/paymentverification',paymentVerification)
 
 module.exports = route
