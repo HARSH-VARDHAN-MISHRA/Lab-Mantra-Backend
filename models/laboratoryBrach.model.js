@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const LaboratorySchema = new mongoose.Schema({
+const LaboratoryBranchSchema = new mongoose.Schema({
     RepresentedName:{
         type: String,
     },
@@ -40,11 +40,12 @@ const LaboratorySchema = new mongoose.Schema({
     },
     Latitude:{
         type: String,
-       
+    },
+    MainLaboratory:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'LaboratoryDetail',
+        required:true
     }
-   
-    
-});
+})
 
-
-module.exports = mongoose.model('LaboratoryDetail', LaboratorySchema);
+module.exports = mongoose.model('LaboratoryBranchDetail',LaboratoryBranchSchema)

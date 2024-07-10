@@ -91,7 +91,15 @@ const OrderSchema = new mongoose.Schema({
             ],
         }
     ],
-
+    testCartDeatil:[
+        {
+            test_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestDetail' }],
+            testName: String,
+            actualPrice: Number,
+            discountPrice: Number,
+            discountPercentage: Number,
+        }
+    ],
     paymentStatus: {
         type: String,
         default: "Pending",

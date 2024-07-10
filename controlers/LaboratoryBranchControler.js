@@ -1,17 +1,19 @@
-// controllers/LaboratoryController.js
+const laboratoryModel = require("../models/laboratory.model");
+const laboratoryBrachModel = require("../models/laboratoryBrach.model");
 
-const Laboratory = require('../models/laboratory.model');
-const haversine = require('haversine-distance');
 const sendEmail = require('../utils/SendEmail');
 
-// Create new laboratory
-const validateCreateLaboratory = (body) => {
-    const { LabName, address, email, city, phoneNumber, state, secondPhoneNumber, pinCode, representedName } = body;
+// Create new laboratory Branch
+const validateCreateBranchLaboratory = (body) => {
+    const {MainLaboratory , LabName, address, email, city, phoneNumber, state, secondPhoneNumber, pinCode, representedName } = body;
 
     const errors = [];
 
     // Validate required fields
     if (!LabName) {
+        errors.push("Lab Branch Name is required.");
+    }
+    if (!MainLaboratory) {
         errors.push("Lab Name is required.");
     }
     if (!address) {
@@ -30,27 +32,33 @@ const validateCreateLaboratory = (body) => {
     return errors;
 };
 
-exports.createLaboratory = async (req, res) => {
+exports.createBranchLaboratory = async (req, res) => {
     try {
-        const { LabName, address, email, city, PhoneNumber, state, SecondPhoneNumber, pinCode, RepresentedName } = req.body;
+        const {MainLaboratory, LabName, address, email, city, PhoneNumber, state, SecondPhoneNumber, pinCode, RepresentedName } = req.body;
         // Validate request body
         console.log(req.body)
-        const validationErrors = validateCreateLaboratory(req.body);
+        const validationErrors = validateCreateBranchLaboratory(req.body);
         if (validationErrors.length > 0) {
             return res.status(400).send({ errors: validationErrors });
         }
 
         // Check for duplicate lab name or email
-        const existingLab = await Laboratory.findOne({ $or: [{ LabName }, { email }] });
-        if (existingLab) {
+        const existingLabBranch = await laboratoryBrachModel.findOne({ $or: [{ LabName }, { email }] });
+        if (existingLabBranch) {
             return res.status(400).json({
                 success: false,
-                message: "Laboratory with this name or email already exists."
+                message: "Laboratory Branch with this name or email already exists."
             });
         }
 
+        // Fetch the Main Laboratory details
+        const mainLab = await laboratoryModel.findById(MainLaboratory);
+        if (!mainLab) {
+            return res.status(404).json({ message: "Main Laboratory not found." });
+        }
+
         // Create new laboratory instance
-        const newLaboratory = new Laboratory({
+        const newLaboratory = new laboratoryBrachModel({
             LabName,
             address,
             email,
@@ -60,6 +68,7 @@ exports.createLaboratory = async (req, res) => {
             RepresentedPhoneNumber: SecondPhoneNumber,
             pinCode,
             RepresentedName,
+            MainLaboratory : mainLab._id, // Storing the ID as reference
         });
 
         // Save the new laboratory to the database
@@ -145,7 +154,7 @@ exports.createLaboratory = async (req, res) => {
                   thereby enhancing their experience and trust in your services.
                 </p>
                 <div>
-                  <a href="http://localhost:3001/give-location?LabId=${newLaboratory._id}" class="button">Give Location Access</a>
+                  <a href="http://localhost:3000/give-branch-location?LabId=${newLaboratory._id}" class="button">Give Location Access</a>
                 </div>
                 <p class="footer">
                   Thank you for your cooperation. Together, we can make Lab Mantra a more valuable resource for everyone.
@@ -168,11 +177,12 @@ exports.createLaboratory = async (req, res) => {
         // Respond with the newly created laboratory
         res.status(201).send(newLaboratory);
     } catch (error) {
-        console.error("Error creating laboratory: ", error);
+        console.error("Error creating laboratory Branch: ", error);
         res.status(500).send({ error: "Internal Server Error" });
     }
 };
-exports.updateLabLocations = async (req, res) => {
+
+exports.updateBranchLabLocations = async (req, res) => {
     try {
         const { labId, latitude, longitude, address, pincode, city, state } = req.body;
 
@@ -185,12 +195,12 @@ exports.updateLabLocations = async (req, res) => {
         }
 
         // Find the laboratory by labId
-        const lab = await Laboratory.findById(labId);
+        const lab = await laboratoryBrachModel.findById(labId);
 
         if (!lab) {
             return res.status(404).json({
                 success: false,
-                msg: "Laboratory not found"
+                msg: "Laboratory Branch not found"
             });
         }
 
@@ -207,7 +217,7 @@ exports.updateLabLocations = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            msg: "Laboratory location updated successfully",
+            msg: "Laboratory Branch location updated successfully",
             data: lab // Optionally, you can return the updated lab data
         });
 
@@ -220,19 +230,19 @@ exports.updateLabLocations = async (req, res) => {
     }
 };
 
-// Get all laboratories
-exports.getLaboratories = async (req, res) => {
+// Get all Branch laboratory
+exports.getBranchLaboratories = async (req, res) => {
     try {
-        const laboratories = await Laboratory.find();
+        const laboratories = await laboratoryBrachModel.find();
         res.status(200).json({ success: true, data: laboratories });
     } catch (error) {
-        console.error("Error fetching laboratories: ", error);
+        console.error("Error fetching Branch laboratory: ", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
 
 // Find nearest laboratories and calculate distances with fees
-exports.findNearestLaboratories = async (req, res) => {
+exports.findNearestBranchLaboratories = async (req, res) => {
     const { longitude, latitude } = req.query;
 
     // Validate longitude and latitude
@@ -255,7 +265,7 @@ exports.findNearestLaboratories = async (req, res) => {
 
     try {
         // Find laboratories near the specified coordinates
-        const laboratories = await Laboratory.find({
+        const laboratories = await laboratoryBrachModel.find({
             location: {
                 $near: {
                     $geometry: { type: 'Point', coordinates: [lon, lat] },
@@ -292,12 +302,12 @@ exports.findNearestLaboratories = async (req, res) => {
         // Respond with the results
         res.status(200).json({ success: true, data: results });
     } catch (error) {
-        console.error("Error finding nearest laboratories:", error);
+        console.error("Error finding nearest Branch laboratories:", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
 
-exports.getLabInformationByCityAndPinCode = async (req, res) => {
+exports.getBranchLabInformationByCityAndPinCode = async (req, res) => {
     try {
         const { pinCode, city } = req.query;
         let query = {};
@@ -317,7 +327,7 @@ exports.getLabInformationByCityAndPinCode = async (req, res) => {
             return res.status(400).json({ error: 'Either pinCode or city must be provided' });
         }
 
-        const laboratories = await Laboratory.find(query);
+        const laboratories = await laboratoryBrachModel.find(query);
 
         res.status(200).json(laboratories);
     } catch (error) {
@@ -326,19 +336,20 @@ exports.getLabInformationByCityAndPinCode = async (req, res) => {
     }
 };
 
-exports.deleteLaboratory = async (req,res) =>{
+
+exports.deleteBranchLaboratory = async (req,res) =>{
     try {
         const id = req.params.id;
-        const checkLab = await Laboratory.deleteOne({ _id: id })
+        const checkLab = await laboratoryBrachModel.deleteOne({ _id: id })
         if (!checkLab) {
             return res.status(403).json({
                 success: false,
-                msg: "Lab Not Found"
+                msg: "Lab Branch Not Found"
             })
         }
         res.status(200).json({
             success: true,
-            msg: "Lab Deleted Succesfully !!"
+            msg: "Lab Branch Deleted Succesfully !!"
         })
     } catch (error) {
         console.log("Error : ", error);
