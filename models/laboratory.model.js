@@ -12,6 +12,10 @@ const LaboratorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    LabPassword:{
+        type:String,
+        trim: true,
+    },
     PhoneNumber:{
         type: Number,
     },
@@ -39,10 +43,12 @@ const LaboratorySchema = new mongoose.Schema({
        
     },
     Latitude:{
-        type: String,
-       
-    }
-   
+        type: String, 
+    },
+    tests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TestDetail'
+    }]
     
 });
 

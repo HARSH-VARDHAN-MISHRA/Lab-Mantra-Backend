@@ -72,8 +72,8 @@ exports.getAllPackage = async (req, res) => {
                 const testCategoryIds = pkg.testCategoryId.map(category => category._id.toString()); // Convert test category IDs to strings
 
                 const matchedTestCategories = await testCategoryModel.find({ _id: { $in: testCategoryIds } }).populate('testId');
-                console.log("Test Category IDs:", testCategoryIds);
-                console.log("Matched Test Categories:", matchedTestCategories);
+                // console.log("Test Category IDs:", testCategoryIds);
+                // console.log("Matched Test Categories:", matchedTestCategories);
 
                 // Flatten the test details from matched test categories
                 const matchedTestDetails = matchedTestCategories.flatMap(category => category.testId);

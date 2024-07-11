@@ -10,6 +10,7 @@ const { checkout, paymentVerification } = require('../controlers/PaymentControll
 const { isAuthenticatedUser } = require('../middlewares/auth');
 const { getAllOrders, deleteOrder } = require('../controlers/OrderControler');
 const { createBranchLaboratory, getBranchLaboratories, findNearestBranchLaboratories, updateBranchLabLocations, getBranchLabInformationByCityAndPinCode, deleteBranchLaboratory } = require('../controlers/LaboratoryBranchControler');
+const { createEnquiryForm, getAllEnquiryForm, deleteEnquiryById } = require('../controlers/ContactControler');
 
 const route = express.Router();
 
@@ -80,5 +81,11 @@ route.post('/paymentverification',paymentVerification)
 // ======== Orders ======= //
 route.get('/all-orders',getAllOrders)
 route.delete('/delete-order/:id',deleteOrder)
+
+
+// Enquiry Form 
+route.post('/apply-enquiry',createEnquiryForm)
+route.get('/get-all-enquiry',getAllEnquiryForm)
+route.delete('/delete-enquiry/:id',deleteEnquiryById)
 
 module.exports = route

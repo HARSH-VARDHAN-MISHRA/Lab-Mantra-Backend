@@ -3,6 +3,7 @@
 const Laboratory = require('../models/laboratory.model');
 const haversine = require('haversine-distance');
 const sendEmail = require('../utils/SendEmail');
+const testModel = require('../models/test.model');
 
 // Create new laboratory
 const validateCreateLaboratory = (body) => {
@@ -32,10 +33,12 @@ const validateCreateLaboratory = (body) => {
 
 exports.createLaboratory = async (req, res) => {
     try {
-        const { LabName, address, email, city, PhoneNumber, state, SecondPhoneNumber, pinCode, RepresentedName } = req.body;
+        const { LabName,LabPassword, address, email, city, PhoneNumber, state, SecondPhoneNumber, pinCode, RepresentedName, discountPercentage } = req.body;
+        // const { LabName,LabPassword, address, email, city, PhoneNumber, state, SecondPhoneNumber, pinCode, RepresentedName, discountPercentage ,tests } = req.body;
         // Validate request body
         console.log(req.body)
         const validationErrors = validateCreateLaboratory(req.body);
+
         if (validationErrors.length > 0) {
             return res.status(400).send({ errors: validationErrors });
         }
@@ -49,9 +52,29 @@ exports.createLaboratory = async (req, res) => {
             });
         }
 
+        // Retrieve all tests from the testModel
+        // const allTests = await testModel.find();
+        // const testIds = [];
+
+        // // Apply discount to each test and save
+        // for (let test of allTests) {
+        //     const { _id, ...testData } = test.toObject(); // Remove _id field
+        //     const discountPrice = test.actualPrice - (test.actualPrice * discountPercentage / 100);
+        //     const newTest = new testModel({
+        //         ...testData,
+        //         discountPrice,
+        //         discountPercentage
+        //     });
+
+        //     const savedTest = await newTest.save();
+        //     testIds.push(savedTest._id);
+        // }
+
+
         // Create new laboratory instance
         const newLaboratory = new Laboratory({
             LabName,
+            LabPassword,
             address,
             email,
             city,
@@ -60,7 +83,10 @@ exports.createLaboratory = async (req, res) => {
             RepresentedPhoneNumber: SecondPhoneNumber,
             pinCode,
             RepresentedName,
+            // tests: testIds,
+            discountPercentage // Save the discount percentage for reference
         });
+
 
         // Save the new laboratory to the database
         await newLaboratory.save();
@@ -172,6 +198,7 @@ exports.createLaboratory = async (req, res) => {
         res.status(500).send({ error: "Internal Server Error" });
     }
 };
+
 exports.updateLabLocations = async (req, res) => {
     try {
         const { labId, latitude, longitude, address, pincode, city, state } = req.body;
