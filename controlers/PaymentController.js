@@ -137,11 +137,11 @@ exports.paymentVerification = async (req, res) => {
             // });
 
             res.redirect(
-                `http://localhost:3000/booking-confirmed?reference=${razorpay_payment_id}`
+                `${process.env.REACT_APP_FRONTEND_URL}/booking-confirmed?reference=${razorpay_payment_id}`
             );
         } else {
             res.redirect(
-                `http://localhost:3000/booking-failed?orderId=${razorpay_order_id}`
+                `${process.env.REACT_APP_FRONTEND_URL}/booking-failed?orderId=${razorpay_order_id}`
             );
         }
     } catch (error) {
