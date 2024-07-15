@@ -11,6 +11,7 @@ const { isAuthenticatedUser } = require('../middlewares/auth');
 const { getAllOrders, deleteOrder } = require('../controlers/OrderControler');
 const { createBranchLaboratory, getBranchLaboratories, findNearestBranchLaboratories, updateBranchLabLocations, getBranchLabInformationByCityAndPinCode, deleteBranchLaboratory } = require('../controlers/LaboratoryBranchControler');
 const { createEnquiryForm, getAllEnquiryForm, deleteEnquiryById } = require('../controlers/ContactControler');
+const { createCity, updateCity, getAllCities, deleteCity } = require('../controlers/Citycontroller');
 
 const route = express.Router();
 
@@ -87,5 +88,11 @@ route.delete('/delete-order/:id',deleteOrder)
 route.post('/apply-enquiry',createEnquiryForm)
 route.get('/get-all-enquiry',getAllEnquiryForm)
 route.delete('/delete-enquiry/:id',deleteEnquiryById)
+
+// All Cities
+route.post('/admin-create-city', createCity);
+route.post('/admin-update-city/:id', updateCity);
+route.get('/admin-get-city', getAllCities);
+route.delete('/admin-delete-city/:id', deleteCity);
 
 module.exports = route
