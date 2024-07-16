@@ -1,5 +1,5 @@
 const express = require('express');
-const { createTest, getAllTest, deleteTest, updateTest } = require('../controlers/TestControler');
+const { createTest, getAllTest, deleteTest, updateTest, AddBranchIdAndDiscount, getAllTestsForBranch, RemoveAllBranchIdsWithDiscount, removeBranchByBranchId, searchByTestName } = require('../controlers/TestControler');
 const { createPackageTitle, getAllPackageTitle, deletePackageTitle, updatePackageTitle } = require('../controlers/packageTitleControler');
 const { createTestCategory, getAllTestCategory, deleteTestCategory, updateTestCategory } = require('../controlers/TestCategoryControler');
 const { createPackage, getAllPackage, deletePackage, updatePackage } = require('../controlers/packageControler');
@@ -66,8 +66,15 @@ route.get('/nearest-branch-laboratories', findNearestBranchLaboratories);
 route.post('/branch-lab-address-update', updateBranchLabLocations);
 route.get('/branch-lab-info-by-pincode', getBranchLabInformationByCityAndPinCode);
 route.get('/delete-branch-laboratory/:id', deleteBranchLaboratory);
+route.post('/add-branch-id-and-discount/:id',AddBranchIdAndDiscount)
+route.get('/get-all-test-of-branch/:id',getAllTestsForBranch)
+route.post('/clear/:id',removeBranchByBranchId)
 
-//====================VOUCHERS====================================//
+//Filter & Search
+route.get('/Search-by-test/:input',searchByTestName)
+
+
+//  ======VOUCHERS     =//
 route.get('/vouchers', getAllVouchers)
 route.post('/apply-vouchers', applyVoucher)
 route.post('/vouchers/create-vouchers', createVoucher)
@@ -75,11 +82,11 @@ route.put('/vouchers/activateVoucher/:id', activateVoucher)
 route.put('/vouchers/deactivateVoucher/:id', deactivateVoucher)
 route.delete('/vouchers/deleteVoucher/:id', deleteVoucher)
 
-// ===================Payment ==========================//
+//   =====Payment    =====//
 route.post('/Create-payment',isAuthenticatedUser,checkout)
 route.post('/paymentverification',paymentVerification)
 
-// ======== Orders ======= //
+//  = Orders   //
 route.get('/all-orders',getAllOrders)
 route.delete('/delete-order/:id',deleteOrder)
 
