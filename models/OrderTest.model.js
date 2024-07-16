@@ -9,6 +9,14 @@ const OrderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    labEmail: {
+        type: String,
+        required: true
+    },
+    labId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'LaboratoryDetail',
+        required: true
+    },
     pincode: {
         type: String,
         required: true
@@ -49,6 +57,8 @@ const OrderSchema = new mongoose.Schema({
     appointTime: {
         type: String,
         required: true
+    },address:{
+        type: String,
     },
     bookingType: {
         type: String,
@@ -67,7 +77,7 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    OrderId:String,
+    OrderId: String,
     totalToPay: {
         type: Number,
         required: true
@@ -91,7 +101,7 @@ const OrderSchema = new mongoose.Schema({
             ],
         }
     ],
-    testCartDeatil:[
+    testCartDeatil: [
         {
             test_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestDetail' }],
             testName: String,
@@ -103,15 +113,24 @@ const OrderSchema = new mongoose.Schema({
     paymentStatus: {
         type: String,
         default: "Pending",
-        enum: ["Success", "Failed", "Cash-Collection", "Pending"]
+        enum: ["Success", "Failed", "created", "Cash-Collection", "Pending"]
     },
     transactionId: {
         type: String,
-        default: "Cash Collections"  
     },
-    PatientId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"UserSchemaDetails"
+    PaymentMethod: {
+        type: String,
+    },
+    OrderId: {
+        type: String,
+    },
+    PaymentDone: {
+        type: Boolean,
+        default: false
+    },
+    PatientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "UserSchemaDetails"
     }
 }, { timestamps: true });
 

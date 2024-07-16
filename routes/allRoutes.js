@@ -1,14 +1,14 @@
 const express = require('express');
-const { createTest, getAllTest, deleteTest, updateTest } = require('../controlers/TestControler');
+const { createTest, getAllTest, deleteTest, updateTest, AddBranchIdAndDiscount, getAllTestsForBranch, RemoveAllBranchIdsWithDiscount, removeBranchByBranchId, searchByTestName } = require('../controlers/TestControler');
 const { createPackageTitle, getAllPackageTitle, deletePackageTitle, updatePackageTitle } = require('../controlers/packageTitleControler');
 const { createTestCategory, getAllTestCategory, deleteTestCategory, updateTestCategory } = require('../controlers/TestCategoryControler');
 const { createPackage, getAllPackage, deletePackage, updatePackage } = require('../controlers/packageControler');
 const { createLaboratory, getLaboratories, findNearestLaboratories, updateLabLocations, getLabInformationByCityAndPinCode, deleteLaboratory } = require('../controlers/laboratoryControler');
 const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForSignIn, VerifyOtp, LoginUser, getAllUsers } = require('../controlers/UserControler');
 const { getAllVouchers, applyVoucher, createVoucher, activateVoucher, deactivateVoucher, deleteVoucher } = require('../controlers/VoucherController');
-const { checkout, paymentVerification } = require('../controlers/PaymentController');
+const { checkout, paymentVerification, MakeCashOnDeliveryCheckOut } = require('../controlers/PaymentController');
 const { isAuthenticatedUser } = require('../middlewares/auth');
-const { getAllOrders, deleteOrder } = require('../controlers/OrderControler');
+const { getAllOrders, deleteOrder, deleteAllOrder } = require('../controlers/OrderControler');
 const { createBranchLaboratory, getBranchLaboratories, findNearestBranchLaboratories, updateBranchLabLocations, getBranchLabInformationByCityAndPinCode, deleteBranchLaboratory } = require('../controlers/LaboratoryBranchControler');
 const { createEnquiryForm, getAllEnquiryForm, deleteEnquiryById } = require('../controlers/ContactControler');
 const { createCity, updateCity, getAllCities, deleteCity } = require('../controlers/Citycontroller');
@@ -66,8 +66,15 @@ route.get('/nearest-branch-laboratories', findNearestBranchLaboratories);
 route.post('/branch-lab-address-update', updateBranchLabLocations);
 route.get('/branch-lab-info-by-pincode', getBranchLabInformationByCityAndPinCode);
 route.get('/delete-branch-laboratory/:id', deleteBranchLaboratory);
+route.post('/add-branch-id-and-discount/:id',AddBranchIdAndDiscount)
+route.get('/get-all-test-of-branch/:id',getAllTestsForBranch)
+route.post('/clear/:id',removeBranchByBranchId)
 
-//====================VOUCHERS====================================//
+//Filter & Search
+route.get('/Search-by-test/:input',searchByTestName)
+
+
+//  ======VOUCHERS     =//
 route.get('/vouchers', getAllVouchers)
 route.post('/apply-vouchers', applyVoucher)
 route.post('/vouchers/create-vouchers', createVoucher)
@@ -75,13 +82,17 @@ route.put('/vouchers/activateVoucher/:id', activateVoucher)
 route.put('/vouchers/deactivateVoucher/:id', deactivateVoucher)
 route.delete('/vouchers/deleteVoucher/:id', deleteVoucher)
 
-// ===================Payment ==========================//
+//   =====Payment    =====//
 route.post('/Create-payment',isAuthenticatedUser,checkout)
+route.post('/Create-Cod-Orders',isAuthenticatedUser,MakeCashOnDeliveryCheckOut)
+
 route.post('/paymentverification',paymentVerification)
 
-// ======== Orders ======= //
+//  = Orders   //
 route.get('/all-orders',getAllOrders)
 route.delete('/delete-order/:id',deleteOrder)
+route.post('/delete-All-order',deleteAllOrder)
+
 
 
 // Enquiry Form 
