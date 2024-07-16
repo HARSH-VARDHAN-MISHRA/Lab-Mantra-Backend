@@ -6,9 +6,9 @@ const { createPackage, getAllPackage, deletePackage, updatePackage } = require('
 const { createLaboratory, getLaboratories, findNearestLaboratories, updateLabLocations, getLabInformationByCityAndPinCode, deleteLaboratory } = require('../controlers/laboratoryControler');
 const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForSignIn, VerifyOtp, LoginUser, getAllUsers } = require('../controlers/UserControler');
 const { getAllVouchers, applyVoucher, createVoucher, activateVoucher, deactivateVoucher, deleteVoucher } = require('../controlers/VoucherController');
-const { checkout, paymentVerification } = require('../controlers/PaymentController');
+const { checkout, paymentVerification, MakeCashOnDeliveryCheckOut } = require('../controlers/PaymentController');
 const { isAuthenticatedUser } = require('../middlewares/auth');
-const { getAllOrders, deleteOrder } = require('../controlers/OrderControler');
+const { getAllOrders, deleteOrder, deleteAllOrder } = require('../controlers/OrderControler');
 const { createBranchLaboratory, getBranchLaboratories, findNearestBranchLaboratories, updateBranchLabLocations, getBranchLabInformationByCityAndPinCode, deleteBranchLaboratory } = require('../controlers/LaboratoryBranchControler');
 const { createEnquiryForm, getAllEnquiryForm, deleteEnquiryById } = require('../controlers/ContactControler');
 const { createCity, updateCity, getAllCities, deleteCity } = require('../controlers/Citycontroller');
@@ -84,11 +84,15 @@ route.delete('/vouchers/deleteVoucher/:id', deleteVoucher)
 
 //   =====Payment    =====//
 route.post('/Create-payment',isAuthenticatedUser,checkout)
+route.post('/Create-Cod-Orders',isAuthenticatedUser,MakeCashOnDeliveryCheckOut)
+
 route.post('/paymentverification',paymentVerification)
 
 //  = Orders   //
 route.get('/all-orders',getAllOrders)
 route.delete('/delete-order/:id',deleteOrder)
+route.post('/delete-All-order',deleteAllOrder)
+
 
 
 // Enquiry Form 
