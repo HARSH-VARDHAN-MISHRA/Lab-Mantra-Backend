@@ -12,6 +12,9 @@ const LaboratorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    discountPercentage:{
+        type: String,
+    },
     LabPassword:{
         type:String,
         trim: true,

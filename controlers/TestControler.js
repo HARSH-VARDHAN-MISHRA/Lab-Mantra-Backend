@@ -1,20 +1,20 @@
 const testModel = require("../models/test.model");
-const Branch  = require('../models/laboratoryBrach.model')
+const Branch = require('../models/laboratoryBrach.model')
 const Labs = require('../models/laboratory.model')
 // create test
-exports.createTest = async (req,res) =>{
+exports.createTest = async (req, res) => {
     try {
         console.log(req.body);
-        const { testName,actualPrice,discountPrice,discountPercentage} = req.body;
+        const { testName, actualPrice, discountPrice, discountPercentage } = req.body;
 
-        if(!testName || !actualPrice){
+        if (!testName || !actualPrice) {
             return res.status(403).json({
                 success: false,
                 message: "Please Provide All Fields !!"
             })
         }
 
-        const existingTest = await testModel.findOne({testName : testName});
+        const existingTest = await testModel.findOne({ testName: testName });
         if (existingTest) {
             return res.status(403).json({
                 success: false,
@@ -45,7 +45,7 @@ exports.createTest = async (req,res) =>{
 }
 
 // Get All Tests
-exports.getAllTest = async (req,res) =>{
+exports.getAllTest = async (req, res) => {
     try {
         const getAllTest = await testModel.find();
         if (getAllTest.length === 0) {
@@ -54,7 +54,7 @@ exports.getAllTest = async (req,res) =>{
                 message: "Test Not Found"
             })
         }
-        
+
         res.status(200).json({
             success: true,
             data: getAllTest,
@@ -134,8 +134,9 @@ exports.updateTest = async (req, res) => {
 
 exports.AddBranchIdAndDiscount = async (req, res) => {
     try {
-        const BranchId = req.params.id;
-        console.log(BranchId);
+
+        const { BranchId, HowManyDiscountAppliedForThisLab } = req.body;
+        console.log(req.body);
         if (!BranchId) {
             return res.status(403).json({
                 success: false,
@@ -152,15 +153,6 @@ exports.AddBranchIdAndDiscount = async (req, res) => {
             });
         }
 
-        // Validate the HowManyDiscountAppliedForThisLab value
-        const { HowManyDiscountAppliedForThisLab } = req.body;
-        console.log(HowManyDiscountAppliedForThisLab)
-        if (typeof HowManyDiscountAppliedForThisLab !== 'number' || HowManyDiscountAppliedForThisLab < 1 || HowManyDiscountAppliedForThisLab > 100) {
-            return res.status(400).json({
-                success: false,
-                msg: "HowManyDiscountAppliedForThisLab must be between 1 and 100"
-            });
-        }
 
         // Update all test details with the specified branch and discount
         const updatedtest = await testModel.updateMany(
@@ -237,7 +229,7 @@ exports.getAllTestsForBranch = async (req, res) => {
         // Filter tests to include the branch's discount
         const testsWithDiscount = tests.map(test => {
             const branch = test.Branch.find(branch => branch.labBranchId.toString() === BranchId);
-            console.log("Branches",branch)
+            console.log("Branches", branch)
             if (branch) {
                 return {
                     ...test._doc,
@@ -293,16 +285,19 @@ exports.searchByTestName = async (req, res) => {
 
             // Find labs associated with the test (assuming lab details are in another model)
             const labs = await Labs.find();
-
-            // Add lab details to result
+            // console.log(labs.discountPercentage)
+            // Calculate discounted prices for labs based on general discount percentage
+            // console.log("Discounts",generalDiscountedPriceForLabs)
+            // Add lab details to result    
             result.labDetails = labs.map(lab => ({
+                labId: lab._id,
                 labName: lab.LabName,
                 labLocation: lab.address,
                 labLat: lab.Latitude,
                 labLang: lab.Longitude,
                 testPrice: test.actualPrice,
-                testDiscountPrice: test.discountPrice,
-                discountPercentage: test.discountPercentage,
+                discountedPrice:test.actualPrice - (test.actualPrice * (lab.discountPercentage / 100)), // Use general discount for labs
+                discountPercentage: lab.discountPercentage
             }));
 
             // Calculate discounted prices for each test based on branch discounts
@@ -323,7 +318,6 @@ exports.searchByTestName = async (req, res) => {
                     });
                 }
             }
-
 
             results.push(result);
         }

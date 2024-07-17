@@ -66,7 +66,7 @@ route.get('/nearest-branch-laboratories', findNearestBranchLaboratories);
 route.post('/branch-lab-address-update', updateBranchLabLocations);
 route.get('/branch-lab-info-by-pincode', getBranchLabInformationByCityAndPinCode);
 route.get('/delete-branch-laboratory/:id', deleteBranchLaboratory);
-route.post('/add-branch-id-and-discount/:id',AddBranchIdAndDiscount)
+route.post('/add-branch-id-and-discount',AddBranchIdAndDiscount)
 route.get('/get-all-test-of-branch/:id',getAllTestsForBranch)
 route.post('/clear/:id',removeBranchByBranchId)
 
