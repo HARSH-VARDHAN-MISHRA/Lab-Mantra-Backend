@@ -296,7 +296,7 @@ exports.searchByTestName = async (req, res) => {
                 labLat: lab.Latitude,
                 labLang: lab.Longitude,
                 testPrice: test.actualPrice,
-                discountedPrice:test.actualPrice - (test.actualPrice * (lab.discountPercentage / 100)), // Use general discount for labs
+                discountedPrice: test.actualPrice - (test.actualPrice * (lab.discountPercentage / 100)).toFixed(0), // Use general discount for labs
                 discountPercentage: lab.discountPercentage
             }));
 
