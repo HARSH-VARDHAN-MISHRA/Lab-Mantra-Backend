@@ -305,7 +305,7 @@ exports.searchByTestName = async (req, res) => {
                 const branchDetails = await Branch.findById(branch.labBranchId);
 
                 if (branchDetails) {
-                    const discountedPrice = test.actualPrice - (test.actualPrice * (branch.HowManyDiscountAppliedForThisLab / 100));
+                    const discountedPrice = test.actualPrice - (test.actualPrice * (branch.HowManyDiscountAppliedForThisLab / 100)).toFixed(0);
 
                     result.branchDetails.push({
                         labBranchId: branch.labBranchId,
@@ -314,6 +314,7 @@ exports.searchByTestName = async (req, res) => {
                         labLang: branchDetails.Longitude,
                         branchLocation: branchDetails.address,
                         HowManyDiscountAppliedForThisLab: branch.HowManyDiscountAppliedForThisLab,
+                        testPrice: test.actualPrice,
                         discountedPrice: discountedPrice
                     });
                 }
