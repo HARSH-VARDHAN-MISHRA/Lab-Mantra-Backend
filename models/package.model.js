@@ -5,6 +5,14 @@ const packageSchema = new mongoose.Schema({
         type:String,
         required:[true,"Please add Package Name"]
     },
+    laboratoryId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"LaboratoryDetail"
+    },
+    laboratoryBranchId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"LaboratoryBranchDetail"
+    },
     testCategoryId:{
         type:[mongoose.Schema.Types.ObjectId],
         ref:"testCategoryDetail",

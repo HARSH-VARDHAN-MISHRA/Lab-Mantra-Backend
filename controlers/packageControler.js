@@ -8,7 +8,7 @@ const { ObjectId } = require('mongoose').Types;
 exports.createPackage = async (req, res) => {
     try {
         console.log(req.body)
-        const { packageName, testQuantity, testGroupQuantity, currentPrice, actualPrice, testCategoryIds, offPercentage } = req.body;
+        const { packageName, testQuantity, testGroupQuantity, currentPrice, actualPrice, testCategoryIds, offPercentage , selectedLab } = req.body;
 
         // Check required fields
         if (!packageName || !testCategoryIds || !actualPrice) {
@@ -35,7 +35,8 @@ exports.createPackage = async (req, res) => {
             currentPrice,
             actualPrice,
             testCategoryId: testCategoryIds,
-            offPercentage
+            offPercentage,
+            laboratoryId : selectedLab 
         });
 
         // Save the new package to the database
