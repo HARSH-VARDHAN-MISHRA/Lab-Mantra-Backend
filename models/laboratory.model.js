@@ -1,28 +1,46 @@
 const mongoose = require('mongoose');
 
+const testSchema = new mongoose.Schema({
+    testNo: {
+        type: Number
+    },
+    TestName: {
+        type: String
+    },
+    Price: {
+        type: Number
+    },
+    DiscountPercentage: {
+        type: Number
+    },
+    DiscountPrice: {
+        type: Number
+    }
+});
+
 const LaboratorySchema = new mongoose.Schema({
-    RepresentedName:{
+    RepresentedName: {
         type: String,
     },
     LabName: {
         type: String,
         required: true,
     },
-    email:{
+    email: {
         type: String,
         required: true,
     },
-    discountPercentage:{
-        type: String,
-    },
-    LabPassword:{
-        type:String,
-        trim: true,
-    },
-    PhoneNumber:{
+    discountPercentage: {
         type: Number,
     },
-    RepresentedPhoneNumber:{
+    LabPassword: {
+        type: String,
+        trim: true,
+    },
+    PhoneNumber: {
+        type: Number,
+    },
+    RepresentedPhoneNumber: {
         type: Number,
     },
     address: {
@@ -41,19 +59,13 @@ const LaboratorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    Longitude:{
+    Longitude: {
         type: String,
-       
     },
-    Latitude:{
-        type: String, 
+    Latitude: {
+        type: String,
     },
-    tests: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'TestDetail'
-    }]
-    
+    tests: [testSchema]
 });
-
 
 module.exports = mongoose.model('LaboratoryDetail', LaboratorySchema);
