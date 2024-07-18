@@ -8,7 +8,7 @@ const { register, PasswordChangeRequest, ResendOtp, ResendSignOtp, verifyOtpForS
 const { getAllVouchers, applyVoucher, createVoucher, activateVoucher, deactivateVoucher, deleteVoucher } = require('../controlers/VoucherController');
 const { checkout, paymentVerification, MakeCashOnDeliveryCheckOut } = require('../controlers/PaymentController');
 const { isAuthenticatedUser } = require('../middlewares/auth');
-const { getAllOrders, deleteOrder, deleteAllOrder } = require('../controlers/OrderControler');
+const { getAllOrders, deleteOrder, deleteAllOrder, getOrderByUserId } = require('../controlers/OrderControler');
 const { createBranchLaboratory, getBranchLaboratories, findNearestBranchLaboratories, updateBranchLabLocations, getBranchLabInformationByCityAndPinCode, deleteBranchLaboratory } = require('../controlers/LaboratoryBranchControler');
 const { createEnquiryForm, getAllEnquiryForm, deleteEnquiryById } = require('../controlers/ContactControler');
 const { createCity, updateCity, getAllCities, deleteCity } = require('../controlers/Citycontroller');
@@ -90,6 +90,7 @@ route.post('/paymentverification',paymentVerification)
 
 //  = Orders   //
 route.get('/all-orders',getAllOrders)
+route.get('/get-order-by-user/:id',getOrderByUserId)
 route.delete('/delete-order/:id',deleteOrder)
 route.post('/delete-All-order',deleteAllOrder)
 

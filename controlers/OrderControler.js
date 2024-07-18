@@ -23,6 +23,29 @@ exports.getAllOrders = async (req, res) => {
         })
     }
 }
+exports.getOrderByUserId = async (req, res) => {
+    try {
+        const {id} = req.params
+        const AllOrders = await OrderTestModel.find({PatientId:id});
+        if (AllOrders === 0) {
+            return res.status(400).json({
+                success: true,
+                message: "Orders Not Avilable Now !!"
+            })
+        }
+        res.status(201).json({
+            success: true,
+            data: AllOrders,
+            msg: "All Orders Found"
+        })
+    } catch (error) {
+        console.log("Error : ".error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error !!"
+        })
+    }
+}
 
 // Delete Order
 exports.deleteOrder = async (req, res) => {

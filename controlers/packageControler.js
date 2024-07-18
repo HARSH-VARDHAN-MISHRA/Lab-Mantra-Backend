@@ -59,8 +59,8 @@ exports.createPackage = async (req, res) => {
 // Function to get all packages
 exports.getAllPackage = async (req, res) => {
     try {
-        const getAllPackage = await packageModel.find().populate('testCategoryId');
-
+        const getAllPackage = await packageModel.find().populate('testCategoryId').populate('laboratoryId');
+        
         if (getAllPackage.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -68,7 +68,12 @@ exports.getAllPackage = async (req, res) => {
             });
         }
 
+        // getAllPackage.map((pkgs)=>(
+        //     console.log(pkgs.laboratoryId)
+        // ))
+
         const transformedPackages = await Promise.all(getAllPackage.map(async (pkg) => {
+            
             try {
                 const testCategoryIds = pkg.testCategoryId.map(category => category._id.toString()); // Convert test category IDs to strings
 

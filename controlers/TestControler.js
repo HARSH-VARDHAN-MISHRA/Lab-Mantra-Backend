@@ -310,6 +310,7 @@ exports.searchByTestName = async (req, res) => {
                     result.branchDetails.push({
                         labBranchId: branch.labBranchId,
                         branchName: branchDetails.LabName,
+                        branchEMail: branchDetails.email,
                         labLat: branchDetails.Latitude,
                         labLang: branchDetails.Longitude,
                         branchLocation: branchDetails.address,

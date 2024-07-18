@@ -1,22 +1,30 @@
 const mongoose = require('mongoose');
+const TestDetailSchema = new mongoose.Schema({
+    _id: false, // Disable auto _id for subdocuments
+    testName: String,
+    // Add more fields as needed from testDetails array
+});
 
+const CartDetailSchema = new mongoose.Schema({
+    _id: false, // Disable auto _id for subdocuments
+    packageName: String,
+    testCategoryId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestCategory' }], // Example ref to another model
+    testQuantity: Number,
+    testGroupQuantity: Number,
+    actualPrice: Number,
+    currentPrice: Number,
+    offPercentage: Number,
+    testDetails: [TestDetailSchema],
+    labBranchId: { type: mongoose.Schema.Types.ObjectId, ref: 'LabBranch' },
+    branchName: String,
+    branchEMail: String,
+    branchLocation: String,
+    HowManyDiscountAppliedForThisLab: Number,
+    testPrice: Number,
+    discountedPrice: Number,
+    discountPercentage: Number,
+});
 const OrderSchema = new mongoose.Schema({
-    labName: {
-        type: String,
-        required: true
-    },
-    labAddress: {
-        type: String,
-        required: true
-    },
-    labEmail: {
-        type: String,
-        required: true
-    },
-    labId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'LaboratoryDetail',
-        required: true
-    },
     pincode: {
         type: String,
         required: true
@@ -57,7 +65,8 @@ const OrderSchema = new mongoose.Schema({
     appointTime: {
         type: String,
         required: true
-    },address:{
+    },
+    address: {
         type: String,
     },
     bookingType: {
@@ -77,43 +86,32 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    OrderId: String,
     totalToPay: {
         type: Number,
         required: true
     },
-    cartDetails: [
+    cartDetails: [CartDetailSchema],
+    testCartDetail: [
         {
             _id: false, // Disable auto _id for subdocuments
-            packageName: String,
-            testCategoryId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestCategory' }], // Example ref to another model
-            testQuantity: Number,
-            testGroupQuantity: Number,
-            actualPrice: Number,
-            currentPrice: Number,
-            offPercentage: Number,
-            testDetails: [
-                {
-                    _id: false, // Disable auto _id for sub-subdocuments
-                    testName: String,
-                    // Add more fields as needed from testDetails array
-                }
-            ],
-        }
-    ],
-    testCartDeatil: [
-        {
-            test_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestDetail' }],
+            test_id: { type: mongoose.Schema.Types.ObjectId, ref: 'TestDetail' },
             testName: String,
             actualPrice: Number,
             discountPrice: Number,
             discountPercentage: Number,
+            labBranchId: { type: mongoose.Schema.Types.ObjectId, ref: 'LabBranch' },
+            branchName: String,
+            branchEMail: String,
+            branchLocation: String,
+            HowManyDiscountAppliedForThisLab: Number,
+            testPrice: Number,
+            discountedPrice: Number,
         }
     ],
     paymentStatus: {
         type: String,
         default: "Pending",
-        enum: ["Success", "Failed", "created", "Cash-Collection", "Pending"]
+        enum: ["Success", "Failed", "created","COD", "Cash-Collection", "Pending"]
     },
     transactionId: {
         type: String,
